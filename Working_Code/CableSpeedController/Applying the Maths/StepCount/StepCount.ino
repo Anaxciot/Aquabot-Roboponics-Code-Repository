@@ -26,6 +26,11 @@ int ENA_down = 2;
 int DIR_down = 3;
 int PUL_down = 4;
 
+//Global Variables
+int MC = 32;        //Microstep setting
+int dia = 2;        //Gear diameter in inches
+int base = 500;     //Base workspace dimension in inches
+int height = 500;   //Height workspace dimension in inches
 
 void setup() {
   // put your setup code here, to run once:
@@ -104,7 +109,7 @@ void loop() {
    *     stepCountHor = stepCountHor - 1;
    *   }
    *   
-   *   if (stepCountHor < 1) {
+   *   if (stepCountHor < -1) {
    *     setDir(left, LOW);setDir(right,LOW); //set direction that would tighten the cables
    *   ``stepMotor(up);stepMotor(down); //step both motors
    *     stepCountHor = stepCountHor + 1;
@@ -157,4 +162,32 @@ void stepMotor(int PUL, int delayTime){
   delayMicroseconds(delayTime);
   digitalWrite(PUL,HIGH);
   delayMicroseconds(delayTime);
+}
+
+//delta returns the change of length in the top cable over the change in length of the horizontal cable
+double delta(double x, double y) {
+  double dx = (dia * PI) / (200 * mc); double dy = dx;
+  double ACD = sqrt(x ^ 2 + (H - y) ^ 2) + sqrt((B - x) ^ 2 + (H - y) ^ 2) - sqrt((x + dx) ^ 2 + (H - y - dy) ^ 2) - sqrt((B - x - dx) ^ 2 + (H - y - dy) ^ 2);
+  double BCD = sqrt(x ^ 2 + y ^ 2) + sqrt(x ^ 2 + (H - y) ^ 2) - sqrt((x + dx) ^ 2 + (y + dy) ^ 2) - sqrt((x + dx) ^ 2 + (H - y - dy) ^ 2);
+  double del = ACD / BCD;
+  return del;
+}
+
+//Calculates the number of secondary steps that need to be taken.
+//Dir: 1 is up, 2 is down, 3 is left, 4 is right
+double calcSecondarySteps(double x, double y, int dir) {
+  switch (dir) {
+    case 1:
+      return 1/delta(x, y);
+      break;
+    case 2:
+      return 1/delta(x, y);
+      break;
+    case 3:
+      return delta(x, y);
+      break;
+    case 4:
+      return delta(x, y);
+      break;
+  }
 }
