@@ -32,6 +32,11 @@ int dia = 2;        //Gear diameter in inches
 int base = 500;     //Base workspace dimension in inches
 int height = 500;   //Height workspace dimension in inches
 
+double x = 0;             //Current x-position
+double y = 0;             //Current y-position
+double stepCountHor = 0;  //Horizontal step counter
+double stepCountVer = 0;  //Vertical step counter
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -98,26 +103,45 @@ void loop() {
    * void moveCartLeft() {
    *   setDirleft(HIGH);setDirright(LOW); //set the direction of the primary motors to whatever would move the cart the correct direction
    *   stepMotor(left);stepMotor(right); //step the primary cables once
-   *   nbrOfSteps = calcSecondaryStep(x,y,dir) //calculate the cooresponding nbr of steps the secondary need to take, the direction the cart is moving with impact if the number is negative of positive
-   *   stepCountHor = stepCountHor + nbrOfSteps //add the nbr of steps to the step count, this should be a global variable
+   *   nbrOfSteps = calcSecondaryStep(x,y,dir); //calculate the cooresponding nbr of steps the secondary need to take, the direction the cart is moving with impact if the number is negative of positive
+   *   stepCountVer = stepCountVer + nbrOfSteps; //add the nbr of steps to the step count, this should be a global variable
    *   
-   *   //stepCountHor will be positive if needs to move slightly out (loosen) and negative if needs to move slightly in (tighened)
+   *   //stepCountVer will be positive if needs to move slightly out (loosen) and negative if needs to move slightly in (tighened)
    *   
-   *   if (stepCountHor > 1) {
-   *     setDir(left, HIGH);setDir(right,HIGH); //set direction that would tighten the cables
-   *   ``stepMotor(up);stepMotor(down); //step both motors
-   *     stepCountHor = stepCountHor - 1;
+   *   if (stepCountVer > 1) {
+   *     setDir(DIR_up, HIGH);setDir(DIR_down,HIGH); //set direction that would tighten the cables
+   *     stepMotor(up);stepMotor(down); //step both motors
+   *     stepCountVer = stepCountVer - 1;
    *   }
    *   
-   *   if (stepCountHor < -1) {
-   *     setDir(left, LOW);setDir(right,LOW); //set direction that would tighten the cables
-   *   ``stepMotor(up);stepMotor(down); //step both motors
+   *   if (stepCountVer < -1) {
+   *     setDir(DIR_up, LOW);setDir(DIR_down,LOW); 
+   *     stepMotor(up);stepMotor(down);
    *     stepCountHor = stepCountHor + 1;
    *   }
    * }
    * 
+   *void moveCartRight() {
+   *   setDirleft(LOW);setDirright(HIGH); 
+   *   stepMotor(left);stepMotor(right);
+   *   nbrOfSteps = calcSecondaryStep(x,y,dir);
+   *   stepCountVer = stepCountVer + nbrOfSteps;
+   *   
+   *   if (stepCountVer > 1) {
+   *     setDir(DIR_up, HIGH);setDir(DIR_down,HIGH);
+   *     stepMotor(up);stepMotor(down);
+   *     stepCountVer = stepCountVer - 1;
+   *   }
+   *   
+   *   if (stepCountHor < -1) {
+   *     setDir(DIR_up, LOW);setDir(DIR_down,LOW);
+   *     stepMotor(up);stepMotor(down);
+   *     stepCountVer = stepCountVer + 1;
+   *   }
+   * }
+   * 
    * void setDir(int motor, bool dir) {
-   *    
+   *    digitalWrite(motor, dir);
    * }
    * 
    */
